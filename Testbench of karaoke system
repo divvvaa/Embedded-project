@@ -1,0 +1,54 @@
+module tb_audio_player;
+
+  // Define your testbench signals
+  reg tb_clk;
+  reg tb_rst;
+  reg tb_button;
+  wire tb_speaker;
+
+  // Define your UART signals
+  wire tx; // Transmit data from your module
+  wire rx; // Receive data to your module
+
+  // Instantiate the module under test
+  audio_player dut (
+    .clk(tb_clk),
+    .rst(tb_rst),
+    .button(tb_button),
+    .speaker(tb_speaker),
+    .tx(tx), // Connect your TX signal to GPIO pin 0
+    .rx(rx)  // Connect your RX signal to GPIO pin 1
+  );
+
+  // Clock generation
+  always begin
+    #5 tb_clk = ~tb_clk;
+  end
+
+  // Testbench stimulus
+  initial begin
+    tb_clk = 0;
+    tb_rst = 0;
+    tb_button = 0;
+
+    // Reset the DUT
+    tb_rst = 1;
+    #10 tb_rst = 0;
+
+    // Apply button press and release
+    #20 tb_button = 1;
+    #10 tb_button = 0;
+
+    // Wait for some time to observe the speaker signal
+    #500;
+
+    // Finish simulation
+    $finish;
+  end
+
+  // Display signals
+  always @(posedge tb_clk) begin
+    $display("Time=%0t: playing=%b, song_duration=%h, speaker=%b", $time, dut.playing, dut.song_duration, tb_speaker);
+  end
+
+endmodule
