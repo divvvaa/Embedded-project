@@ -1,0 +1,30 @@
+module audio_player (
+  input wire clk,      // Clock input
+  input wire rst,      // Reset input
+  input wire button,   // Button input
+  output wire speaker  // Speaker output
+);
+
+  // Define your Verilog logic here
+  reg playing;
+  reg [15:0] song_duration;
+
+  // State machine to control audio playback
+  always @(posedge clk or posedge rst) begin
+    if (rst) begin
+      playing <= 0;
+      song_duration <= 0;
+    end else if (button && !playing) begin
+      playing <= 1;
+      song_duration <= 50000; // Adjust this value for song duration
+    end else if (playing && song_duration > 0) begin
+      song_duration <= song_duration - 1;
+    end else if (song_duration == 0) begin
+      playing <= 0;
+    end
+  end
+
+  // Speaker output control
+  assign speaker = playing;
+
+endmodule
