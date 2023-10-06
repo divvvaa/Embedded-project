@@ -4,29 +4,39 @@
 
 TMRpcm audio;
 
+const int buttonPin = 2; // Pin for the trigger button
+const int speakerPin = 9; // Pin for the speaker
+
 void setup() {
   // Initialize Serial Communication
   Serial.begin(9600);
 
   // Initialize SD Card
-  if (!SD.begin(10)) {
-    Serial.println("SD Card initialization failed!");
+  if (!initializeSDCard()) {
     return;
   }
 
   // Initialize audio playback
-  audio.speakerPin = 9; // Connect the XC3748 module's speaker pin to Arduino pin 9
+  audio.speakerPin = speakerPin;
 }
 
 void loop() {
-  // Check if there's a button press or another trigger to play a song
-  // You can use digitalRead() to check a button press or any other trigger
-  // For simplicity, let's assume you trigger song playback using a button press on pin 2
-  int buttonState = digitalRead(2);
-
-  if (buttonState == HIGH) { // Change this condition according to your trigger mechanism
-    playSong("song1.wav");  // Replace "song1.wav" with the name of your audio file
+  if (isButtonPressed(buttonPin)) {
+    playSong("song1.wav");
   }
+}
+
+bool initializeSDCard() {
+  if (!SD.begin(10)) {
+    Serial.println("SD Card initialization failed!");
+    return false;
+  }
+  Serial.println("SD Card initialized successfully.");
+  return true;
+}
+
+bool isButtonPressed(int pin) {
+  return digitalRead(pin) == HIGH;
 }
 
 void playSong(const char* filename) {
@@ -39,3 +49,5 @@ void playSong(const char* filename) {
     Serial.println("File not found.");
   }
 }
+
+ 
