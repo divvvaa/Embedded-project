@@ -35,14 +35,22 @@ module tb_audio_player;
     tb_rst = 1;
     #10 tb_rst = 0;
 
-    // Apply button press and release
+    // Simulate button press and release
     #20 tb_button = 1;
     #10 tb_button = 0;
+
+    // Simulate multiple button presses and releases with varying intervals
+    repeat (5) begin
+      #100;
+      tb_button = 1;
+      #10 tb_button = 0;
+      #50;
+    end
 
     // Wait for some time to observe the speaker signal
     #500;
 
-    // Finish simulation
+    // Finish simulation gracefully
     $finish;
   end
 
